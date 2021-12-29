@@ -16,7 +16,7 @@ public class RecursoController {
     @Autowired
     RecursoService servicioRecurso;
 
-    @GetMapping()
+    @GetMapping("/recursos")
     public ResponseEntity<List<RecursoDTO>> findAll() {
         return new ResponseEntity(servicioRecurso.obtenerTodosRecursos(), HttpStatus.OK);
     }

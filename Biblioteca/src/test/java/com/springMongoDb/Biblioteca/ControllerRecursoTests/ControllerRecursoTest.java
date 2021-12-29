@@ -1,7 +1,7 @@
 package com.springMongoDb.Biblioteca.ControllerRecursoTests;
 
+
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.springMongoDb.Biblioteca.Collection.Recurso;
 import com.springMongoDb.Biblioteca.DTO.RecursoDTO;
 import com.springMongoDb.Biblioteca.Service.RecursoService;
 import org.junit.jupiter.api.DisplayName;
@@ -11,20 +11,22 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.ResultMatcher;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Optional;
 
-import static org.assertj.core.internal.bytebuddy.matcher.ElementMatchers.is;
-import static org.hamcrest.Matchers.hasSize;
-import static org.springframework.http.RequestEntity.post;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.ArgumentMatchers.any;
+
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+
+import static org.hamcrest.Matchers.*;
 
 
 @SpringBootTest
@@ -67,27 +69,27 @@ public class ControllerRecursoTest {
         Mockito.when(servicioRecurso.obtenerTodosRecursos()).thenReturn(lista);
 
         //execute Get request
-        mockMvc.perform(get("/biblioteca"))
+        mockMvc.perform(get("/biblioteca/recursos"))
                 // Validate the response code and content type
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
 
                 // Validate the returned fields
                 .andExpect(jsonPath("$", hasSize(2)))
-                .andExpect((ResultMatcher) jsonPath("$[0].id", is("1111")))
-                .andExpect((ResultMatcher) jsonPath("$[0].nombre", is("Cien años de soledad")))
-                .andExpect((ResultMatcher) jsonPath("$[0].tipoRecurso", is("Libro")))
-                .andExpect((ResultMatcher) jsonPath("$[0].areaTematica", is("Literatura")))
-                .andExpect((ResultMatcher) jsonPath("$[0].enPrestamo", is(false)))
-                .andExpect((ResultMatcher) jsonPath("$[0].fechaPrestamo", is("")))
-                .andExpect((ResultMatcher) jsonPath("$[1].id", is("2222")))
-                .andExpect((ResultMatcher) jsonPath("$[1].nombre", is("El Testigo")))
-                .andExpect((ResultMatcher) jsonPath("$[1].tipoRecurso", is("Documental")))
-                .andExpect((ResultMatcher) jsonPath("$[1].areaTematica", is("Cine")))
-                .andExpect((ResultMatcher) jsonPath("$[1].enPrestamo", is(true)));
+                .andExpect(jsonPath("$[0].id", is("1111")))
+                .andExpect(jsonPath("$[0].name", is("Cien años de soledad")))
+                .andExpect(jsonPath("$[0].tipoRecurso", is("Libro")))
+                .andExpect(jsonPath("$[0].areaTematica", is("Literatura")))
+                .andExpect(jsonPath("$[0].enPrestamo", is(false)))
+                .andExpect(jsonPath("$[0].fechaPrestamo", is("")))
+                .andExpect(jsonPath("$[1].id", is("2222")))
+                .andExpect(jsonPath("$[1].name", is("El Testigo")))
+                .andExpect(jsonPath("$[1].tipoRecurso", is("Documental")))
+                .andExpect(jsonPath("$[1].areaTematica", is("Cine")))
+                .andExpect(jsonPath("$[1].enPrestamo", is(true)));
     }
 
-    /*@Test
+    @Test
     @DisplayName("POST /recurso/crear success")
     public void create() throws Exception {
 
@@ -100,14 +102,14 @@ public class ControllerRecursoTest {
         datoPost.setFechaPrestamo("");
 
         var datoReturn = new RecursoDTO();
-        datoPost.setId("1111");
-        datoPost.setName("Cien años de soledad");
-        datoPost.setTipoRecurso("Libro");
+        datoReturn.setId("1111");
+        datoReturn.setName("Cien años de soledad");
+        datoReturn.setTipoRecurso("Libro");
 
         Mockito.when(servicioRecurso.crearRecurso(Mockito.refEq(datoPost))).thenReturn(datoReturn);
 
         // Execute the POST request
-        mockMvc.perform(post("/recurso/crear")
+        mockMvc.perform(post("/biblioteca/recurso/crear")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(asJsonString(datoPost)))
 
@@ -116,10 +118,10 @@ public class ControllerRecursoTest {
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
 
                 // Validate the returned fields
-                .andExpect(jsonPath("$.id", is("2222")))
-                .andExpect(jsonPath("$.nombre", is("Jorge Ramirez")))
-                .andExpect(jsonPath("$.rol", is("Gerente")));
-    }*/
+                .andExpect(jsonPath("$.id", is("1111")))
+                .andExpect(jsonPath("$.name", is("Cien años de soledad")))
+                .andExpect(jsonPath("$.tipoRecurso", is("Libro")));
+    }
 
     static String asJsonString(final Object obj) {
         try {
